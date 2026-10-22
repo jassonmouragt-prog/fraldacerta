@@ -37,7 +37,7 @@ export function SearchResults({ state, result, error, location, sort, onSortChan
   const unavailableSources = result?.sources.filter((source) => source.status !== "success") ?? [];
   return (
     <section id="resultados" className="results-section" aria-labelledby="results-heading" aria-live="polite">
-      <div className="results-header"><h2 id="results-heading">Um jeito mais claro de escolher.</h2><p>Compare ofertas das fontes consultadas e de catálogos autorizados, com o custo por fralda em destaque.</p></div>
+      <div className="results-header"><h2 id="results-heading">Um jeito mais claro de escolher.</h2><p>Compare ofertas das fontes consultadas e de catálogos autorizados, com o custo por fralda em destaque.</p><p className="affiliate-explainer">Alguns links podem gerar comissão para a FraldaCerta. Isso não altera a ordenação por preço; cada oferta é identificada.</p></div>
       {state === "loading" && <div className="result-state" role="status"><LoaderCircle className="spin" size={30} aria-hidden="true" /><h3>Consultando as fontes…</h3><p>Verificando anúncios, preços e informações de frete para o CEP informado.</p></div>}
       {state === "error" && <div className="result-state" role="alert"><CircleAlert size={30} aria-hidden="true" /><h3>Não foi possível concluir a busca</h3><p>{error}</p><button type="button" className="text-action" onClick={onRetry}>Tentar novamente <ArrowRight size={16} /></button></div>}
       {state === "success" && result && <>

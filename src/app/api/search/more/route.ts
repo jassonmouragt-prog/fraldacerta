@@ -3,6 +3,7 @@ import { ImportedCatalogAdapter } from "@/integrations/imported-catalog";
 import { createRateLimiter } from "@/services/rate-limit";
 import { ProgressiveSearchApiAdapter } from "@/services/progressive-search";
 import { orchestrateSearch } from "@/services/search-server";
+import { enrichSearchResult } from "@/affiliate/enrich";
 
 export const runtime = "nodejs";
 
@@ -25,7 +26,7 @@ export async function POST(request: Request) {
     if (raw.length > 2048) return Response.json({ error: "Consulta muito grande." }, { status: 413, headers });
     const { cursor, ...input } = bodySchema.parse(JSON.parse(raw));
     const result = await orchestrateSearch(input, [{ id: searchapi.id, name: searchapi.name, search: (filters, signal) => searchapi.expand(filters, cursor, signal) }, catalog], { timeoutMs: 45_000, signal: request.signal });
-    return Response.json(result, { headers });
+    return Response.json(await enrichSearchResult(result), { headers });
   } catch (error) {
     if (error instanceof ZodError || error instanceof SyntaxError) return Response.json({ error: "Identificador ou filtros inválidos." }, { status: 400, headers });
     return Response.json({ error: "Não foi possível ampliar a busca." }, { status: 500, headers });

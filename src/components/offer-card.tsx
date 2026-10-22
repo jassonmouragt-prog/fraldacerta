@@ -19,7 +19,7 @@ export function OfferCard({ offer, highlighted = false }: { offer: Offer; highli
         <h3>{offer.product.name}</h3>
         <p>{offer.store.name} · {offer.unitCount} fraldas{offer.packageCount > 1 ? ` · ${offer.packageCount} pacotes` : ""}</p>
         <small>{offer.origin === "imported" ? "Coletado em" : "Verificado em"} {dateTime.format(new Date(offer.checkedAt))}</small>
-        {offer.source === "amazon" && <small>Como participante do Programa de Associados da Amazon, sou remunerado pelas compras qualificadas. Os preços e a disponibilidade dos produtos estão corretos na data e no horário indicados e poderão sofrer alterações.</small>}
+        {offer.outbound?.commissioned && offer.outbound.marketplace === "amazon" && <small>Como participante do Programa de Associados da Amazon, sou remunerado pelas compras qualificadas efetuadas. Os preços e a disponibilidade dos produtos poderão sofrer alterações.</small>}
         {offer.origin === "imported" && !offer.availabilityConfirmed && <small>Disponibilidade não confirmada pelo parceiro.</small>}
       </div>
       <div className="offer-price">
@@ -27,7 +27,8 @@ export function OfferCard({ offer, highlighted = false }: { offer: Offer; highli
         <span>{unitMoney.format(offer.unitPriceCents / 100)} por fralda</span>
         {offer.source === "amazon" && offer.usedPriceCents !== undefined && <small>Menor preço usado informado pela Amazon: {money.format(offer.usedPriceCents / 100)}</small>}
         {delivered !== null ? <small>Frete cotado: {money.format(offer.shippingPriceCents! / 100)} · Total com frete: {money.format(delivered / 100)}</small> : <small>Frete não verificado</small>}
-        <a href={offer.url} target="_blank" rel="noopener noreferrer" aria-label={`Ver oferta de ${offer.product.name} em ${offer.store.name}`}>Ver oferta <ArrowUpRight size={17} aria-hidden="true" /></a>
+        <small className={offer.outbound?.commissioned ? "commission-label" : "uncommissioned-label"}>{offer.outbound?.commissioned ? "Link comissionado" : "Link não comissionado"}</small>
+        <a href={offer.outbound?.href ?? offer.url} target="_blank" rel="noopener noreferrer" aria-label={`Ver oferta de ${offer.product.name} em ${offer.store.name}${offer.outbound?.commissioned ? ", link comissionado" : ", link não comissionado"}`}>Ver oferta <ArrowUpRight size={17} aria-hidden="true" /></a>
       </div>
     </article>
   );

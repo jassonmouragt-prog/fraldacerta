@@ -45,6 +45,7 @@ export interface Offer {
   origin?: "live" | "imported";
   availabilityConfirmed?: boolean;
   usedPriceCents?: number;
+  outbound?: { href: string; commissioned: boolean; marketplace: "shopee" | "amazon" | "mercado-livre" };
 }
 
 export interface SourceStatus {

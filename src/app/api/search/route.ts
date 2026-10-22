@@ -3,6 +3,7 @@ import { ImportedCatalogAdapter } from "@/integrations/imported-catalog";
 import { ProgressiveSearchApiAdapter } from "@/services/progressive-search";
 import { createRateLimiter } from "@/services/rate-limit";
 import { orchestrateSearch } from "@/services/search-server";
+import { enrichSearchResult } from "@/affiliate/enrich";
 
 export const runtime = "nodejs";
 
@@ -21,7 +22,7 @@ export async function POST(request: Request) {
     if (body.length > 2048) return Response.json({ error: "Consulta muito grande." }, { status: 413, headers: jsonHeaders });
     const input: unknown = JSON.parse(body);
     const result = await orchestrateSearch(input, [searchapi, catalog], { timeoutMs: 45_000, signal: request.signal });
-    return Response.json(result, { headers: jsonHeaders });
+    return Response.json(await enrichSearchResult(result), { headers: jsonHeaders });
   } catch (error) {
     if (error instanceof ZodError) return Response.json({ error: "Filtros inválidos.", details: error.issues.map((issue) => ({ field: issue.path.join("."), message: issue.message })) }, { status: 400, headers: jsonHeaders });
     if (error instanceof SyntaxError) return Response.json({ error: "JSON inválido." }, { status: 400, headers: jsonHeaders });
